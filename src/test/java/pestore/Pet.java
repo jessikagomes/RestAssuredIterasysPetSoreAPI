@@ -20,7 +20,7 @@ public class Pet {
         return new String(Files.readAllBytes(Paths.get(caminhoJson)));
     }
 
-    @Test(priority = 1)
+    @Test
     public void incluirPet () throws IOException {
         String jsonBody = lerJson("db/pet1.json");
 
@@ -40,13 +40,13 @@ public class Pet {
 
     }
 
-    @Test(priority = 2)
+    @Test
     public void consultarPet(){
 
-        String petId = "9223372036854775807";
+        String petId = "997745513";
 
         given()
-                .contentType("application/jsom")
+                .contentType("application/json")
                 .log().all()
         .when()
                 .get(uri + "/" + petId)
@@ -58,5 +58,41 @@ public class Pet {
                 .body("tags.name", contains("sta"))
         ;
 
+    }
+
+    @Test
+    public void alterarPet() throws IOException {
+
+        String jsonBody = lerJson("db/pet2.json");
+
+        given()
+                .contentType("application/json")
+                .log().all()
+                .body(jsonBody)
+        .when()
+                .put(uri)
+        .then()
+                .log().all()
+                .statusCode(200)
+                .body("status", is("sold"))
+        ;
+    }
+
+    @Test
+    public void excluirPet(){
+
+        String petId = "997745513";
+
+        given()
+                .contentType("application/json")
+                .log().all()
+        .when()
+                .delete(uri + "/" + petId)
+        .then()
+                .statusCode(200)
+                .body("code", is(200))
+                .body("type", is("unknown"))
+                .body("message", is(petId))
+        ;
     }
 }
